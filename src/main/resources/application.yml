@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: Bank-Card-Management-System
+
+  # DB
+  datasource:
+    url: jdbc:postgresql://localhost:5435/db_bank_card
+    username: db_bank_card
+    password: db_bank_card
+    driverClassName: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        hbm2ddl:
+          auto: update
+        globally_quoted_identifiers: true # ( user, order, group)
+    generate-ddl: true
+    show-sql: false
+
+springdoc:
+  swagger-ui:
+    path: /ui
+
+jwt:
+  secret:
+    access: qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
+    refresh: zL1HB3Pch05Avfynovxrf/kpF9O2m4NCWKJUjEp27s9J2jEG3ifiKCGylaZ8fDeoONSTJP/wAzKawB8F9rOMNg==
+
+cooke:
+  time:
+    live:
+      refreshToken: 86000
