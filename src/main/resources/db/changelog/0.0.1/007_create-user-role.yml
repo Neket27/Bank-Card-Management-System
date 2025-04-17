@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-role-table
+      author: Nikita Kulga
+      changes:
+        - createTable:
+            tableName: user_role
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+              - column:
+                  name: roles
+                  type: varchar(255)
+        - addForeignKeyConstraint:
+            baseTableName: user_role
+            baseColumnNames: user_id
+            constraintName: fk_user_role_user
+            referencedTableName: usr
+            referencedColumnNames: id
+        - sql:
+            sql: |
+              ALTER TABLE user_role
+              ADD CONSTRAINT user_role_roles_check
+              CHECK (roles IN ('ROLE_USER','ROLE_ADMIN'));

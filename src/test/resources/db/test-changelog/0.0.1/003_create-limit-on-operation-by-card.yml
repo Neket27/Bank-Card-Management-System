@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-limit-on-operation-by-card-table
+      author: Nikita Kulga
+      changes:
+        - createTable:
+            tableName: limit_on_operation_by_card
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: amount
+                  type: decimal(19, 2)
+              - column:
+                  name: end_periud
+                  type: timestamp(6)
+              - column:
+                  name: limit_card
+                  type: varchar(255)
+              - column:
+                  name: remaining_crd_limit
+                  type: decimal(19, 2)
+              - column:
+                  name: start_periud
+                  type: timestamp(6)
+              - column:
+                  name: card_id
+                  type: bigint
+        - addForeignKeyConstraint:
+            baseTableName: limit_on_operation_by_card
+            baseColumnNames: card_id
+            constraintName: fk_limit_card
+            referencedTableName: card
+            referencedColumnNames: id
+        - sql:
+            sql: |
+              ALTER TABLE limit_on_operation_by_card
+              ADD CONSTRAINT limit_card_check
+              CHECK (limit_card IN ('MONTH','DAY'));

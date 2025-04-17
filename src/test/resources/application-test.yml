@@ -3,6 +3,14 @@ spring:
     name: Bank-Card-Management-System
 
   # DB
+  # DB
+  liquibase:
+    change-log: db/changelog/changelog-master.yml
+    default-schema: public
+    enabled: true
+    password: db_bank_card
+    user: db_bank_card
+
   datasource:
     url: jdbc:postgresql://localhost:5435/db_bank_card
     username: db_bank_card

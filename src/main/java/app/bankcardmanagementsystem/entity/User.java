@@ -9,29 +9,38 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.awt.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Table(name = "usr")
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Setter
 @Getter
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String password;
     private String email;
-
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    public Set<Card> cards;
+
+
+    public User(){
+        roles = new HashSet<>();
+        cards = new HashSet<>();
+
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -68,6 +77,4 @@ public class User implements UserDetails {
         return true;
     }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<Card> cards;
 }

@@ -1,6 +1,5 @@
 package app.bankcardmanagementsystem.service.impl;
 
-
 import app.bankcardmanagementsystem.controller.dto.TransactionDto;
 import app.bankcardmanagementsystem.controller.dto.TransferRequestDto;
 import app.bankcardmanagementsystem.entity.Card;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +31,7 @@ public class TransactionServiceImpl {
 
     @Transactional
     public Transaction addTransaction(Long cardId, TransactionDto dto) {
-        Card card = cardRepository.findById(cardId).orElseThrow();
+        Card card = cardRepository.findById(cardId).orElseThrow(()-> new NotFoundException("Card not found with id: " + cardId));
         BigDecimal amountAfterPurchase = card.getBalance().subtract(dto.getAmount());
         if (amountAfterPurchase.compareTo(BigDecimal.ZERO) < 0)
             throw new CreateException("Недостаточно средств на балансе, необходимо пополнить баланс на сумму: " + amountAfterPurchase.abs());
@@ -79,8 +77,11 @@ public class TransactionServiceImpl {
 
         Card card = cardRepository.findById(cardId).orElseThrow();
 
-        String s= auth.getName();
-        if (!isAdmin && !card.getUser().getEmail().equals(s)) {
+        try {
+            if (!isAdmin && !card.getUser().getEmail().equals(auth.getName())) {
+                throw new SecurityException("Access denied: not your card");
+            }
+        } catch (Exception e) {
             throw new SecurityException("Access denied: not your card");
         }
         return transactionRepository.findByCardId(cardId);
@@ -90,8 +91,8 @@ public class TransactionServiceImpl {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        Card fromCard = cardRepository.findById(dto.fromCardId()).orElseThrow(()-> new NotFoundException("Card not found with id: " + dto.fromCardId()));
-        Card toCard = cardRepository.findById(dto.toCardId()).orElseThrow(()-> new NotFoundException("Card not found with id: " + dto.toCardId()));
+        Card fromCard = cardRepository.findById(dto.fromCardId()).orElseThrow(() -> new NotFoundException("Card not found with id: " + dto.fromCardId()));
+        Card toCard = cardRepository.findById(dto.toCardId()).orElseThrow(() -> new NotFoundException("Card not found with id: " + dto.toCardId()));
 
         if (!fromCard.getUser().getEmail().equals(currentUser) || !toCard.getUser().getEmail().equals(currentUser)) {
             throw new CreateException("Access denied: can only transfer between your own cards.");

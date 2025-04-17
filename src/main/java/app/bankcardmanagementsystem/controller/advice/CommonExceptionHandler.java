@@ -2,8 +2,13 @@ package app.bankcardmanagementsystem.controller.advice;
 
 
 import app.bankcardmanagementsystem.controller.advice.annotation.CustomExceptionHandler;
-import app.bankcardmanagementsystem.exception.*;
+import app.bankcardmanagementsystem.exception.CreateException;
+import app.bankcardmanagementsystem.exception.DeleteException;
+import app.bankcardmanagementsystem.exception.NotFoundException;
+import app.bankcardmanagementsystem.exception.UpdateException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -31,9 +36,21 @@ public class CommonExceptionHandler {
         return new Response(errors.toString(), Instant.now().toString());
     }
 
+    @ExceptionHandler(AuthenticationServiceException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Response handleAuthenticationServiceException(AuthenticationServiceException ex) {
+        return new Response(ex.getMessage(), Instant.now().toString());
+    }
+
     @ExceptionHandler(SecurityException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Response handleAccessDeniedException(SecurityException ex) {
+        return new Response(ex.getMessage(), Instant.now().toString());
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Response handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
         return new Response(ex.getMessage(), Instant.now().toString());
     }
 
