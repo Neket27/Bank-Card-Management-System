@@ -21,8 +21,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -55,16 +58,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponse signin(SigninRequest signinRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.email(), signinRequest.password()));
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.email(), signinRequest.password()));
+        } catch (AuthenticationException e) {
+            throw new AuthenticationServiceException("Invalid email or password");
+        }
+
         User user = userService.getUserByEmail(signinRequest.email());
         if (user == null)
-            return null;
+            throw new AccessDeniedException("User not found");
 
         return createJwtAuthenticationResponse(user);
     }
 
     @Override
-    public JwtAuthenticationResponse refreshToken(String refreshToken, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)  {
+    public JwtAuthenticationResponse refreshToken(String refreshToken, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         if (refreshToken == null || refreshToken.isEmpty())
             return JwtAuthenticationResponse.builder().build();
 

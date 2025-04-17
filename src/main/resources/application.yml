@@ -3,6 +3,13 @@ spring:
     name: Bank-Card-Management-System
 
   # DB
+  liquibase:
+    change-log: db/changelog/changelog-master.yml
+    default-schema: public
+    enabled: true
+    password: db_bank_card
+    user: db_bank_card
+
   datasource:
     url: jdbc:postgresql://localhost:5435/db_bank_card
     username: db_bank_card
@@ -13,9 +20,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         hbm2ddl:
-          auto: update
+          auto: none
         globally_quoted_identifiers: true # ( user, order, group)
-    generate-ddl: true
+    generate-ddl: false
     show-sql: false
 
 springdoc:

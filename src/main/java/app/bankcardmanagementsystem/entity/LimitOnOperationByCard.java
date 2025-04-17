@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class LimitOnOperationByCard{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @Enumerated(EnumType.STRING)
     private LimitCard limitCard;

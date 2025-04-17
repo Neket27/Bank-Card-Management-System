@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-token-jwt-table
+      author: Nikita Kulga
+      changes:
+        - createTable:
+            tableName: token_jwt
+            columns:
+              - column:
+                  name: refresh_token
+                  type: varchar(255)
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+        - addForeignKeyConstraint:
+            baseTableName: token_jwt
+            baseColumnNames: user_id
+            constraintName: fk_token_jwt_user
+            referencedTableName: usr
+            referencedColumnNames: id

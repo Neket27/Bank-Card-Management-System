@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-card-table
+      author: Nikita Kulga
+      changes:
+        - createTable:
+            tableName: card
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: balance
+                  type: decimal(19, 2)
+              - column:
+                  name: card_holder
+                  type: varchar(255)
+              - column:
+                  name: encrypted_card_number
+                  type: varchar(255)
+              - column:
+                  name: expiry_date
+                  type: date
+              - column:
+                  name: masked_card_number
+                  type: varchar(255)
+              - column:
+                  name: status
+                  type: varchar(255)
+              - column:
+                  name: user_id
+                  type: bigint
+        - addForeignKeyConstraint:
+            baseTableName: card
+            baseColumnNames: user_id
+            constraintName: fk_card_user
+            referencedTableName: usr
+            referencedColumnNames: id
+        - sql:
+            sql: |
+              ALTER TABLE card ADD CONSTRAINT card_status_check
+              CHECK (status IN ('ACTIVE', 'BLOCKED', 'EXPIRED'));

@@ -11,6 +11,7 @@ import lombok.*;
 @Setter
 @Getter
 public class TokenJWT {
+
     @Id
     private Long userId;
     private String refreshToken;

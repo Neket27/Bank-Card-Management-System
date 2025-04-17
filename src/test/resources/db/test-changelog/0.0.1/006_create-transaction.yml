@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-transaction-table
+      author: Nikita Kulga
+      changes:
+        - createTable:
+            tableName: transaction
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: amount
+                  type: decimal(19, 2)
+              - column:
+                  name: description
+                  type: varchar(255)
+              - column:
+                  name: timestamp
+                  type: timestamp(6)
+              - column:
+                  name: card_id
+                  type: bigint
+        - addForeignKeyConstraint:
+            baseTableName: transaction
+            baseColumnNames: card_id
+            constraintName: fk_transaction_card
+            referencedTableName: card
+            referencedColumnNames: id

@@ -41,7 +41,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class CardControllerIntegrationTest {
 
@@ -85,6 +84,11 @@ public class CardControllerIntegrationTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        // Настройки для liquibase
+        registry.add("spring.liquibase.url", postgres::getJdbcUrl);
+        registry.add("spring.liquibase.user", postgres::getUsername);
+        registry.add("spring.liquibase.password", postgres::getPassword);
+        registry.add("spring.liquibase.change-log", () -> "db/test-changelog/changelog-master.yml");
     }
 
     @BeforeEach
@@ -153,7 +157,6 @@ public class CardControllerIntegrationTest {
                 .andExpect(jsonPath("$.status").value("BLOCKED")) // Assert: Проверка статуса карты
                 .andReturn().getResponse().getContentAsString();
 
-        // Дополнительная проверка статуса карты
         assertThat(response).contains("BLOCKED");
     }
 
@@ -215,7 +218,7 @@ public class CardControllerIntegrationTest {
     @WithMockUser(roles = "USER")
     void addTransaction_success() throws Exception {
         // Arrange: Создание транзакции
-        TransactionDto tx = new TransactionDto();
+        TransactionDto tx = TransactionDto.builder().build();
         tx.setAmount(BigDecimal.valueOf(100));
         tx.setDescription("Test payment");
 
@@ -227,7 +230,6 @@ public class CardControllerIntegrationTest {
                 .andExpect(jsonPath("$.description").value("Test payment")) // Assert: Проверка описания транзакции
                 .andReturn().getResponse().getContentAsString();
 
-        // Дополнительная проверка
         assertThat(response).contains("Test payment");
     }
 
